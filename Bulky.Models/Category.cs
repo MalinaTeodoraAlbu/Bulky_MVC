@@ -8,7 +8,7 @@ namespace Bulky.Models
         [Key]
         public int Id { get; set; } //primary key, if we have Id/CategoryId the annotation is not required
         [Required]
-        [MaxLength(20)]
+        [MaxLength(30)]
         [DisplayName("Category Name")]
         public string Name { get; set; }
         [DisplayName("Display Order")]
