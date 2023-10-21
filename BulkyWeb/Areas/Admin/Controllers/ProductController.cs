@@ -22,11 +22,11 @@ namespace BulkyWeb.Areas.Admin.Controllers
             return View(objProductList);
         }
 
-        public IActionResult Create()
+        public IActionResult Upsert(int? id)
         {
-            
+
             //ViewBag.CategoryList = CategoryList;
-           
+
             ProductVM productVM = new()
             {
                 CategoryList = _unitOfWork.Category.GetAll()
@@ -35,13 +35,24 @@ namespace BulkyWeb.Areas.Admin.Controllers
                     Text = u.Name,
                     Value = u.Id.ToString(),
                 }),
-            Product = new Product()
+                Product = new Product()
             };
+            if (id == null || id == 0)
+            {
+                //create
+                return View(productVM);
+            }
+            else
+            {
+                //update
+                productVM.Product = _unitOfWork.Product.Get(u=> u.Id == id);
+                return View(productVM );
+            }
             return View(productVM);
         }
 
         [HttpPost]
-        public IActionResult Create(ProductVM obj)
+        public IActionResult Upsert(ProductVM obj, IFormFile file)
         {
 
             if (ModelState.IsValid)
@@ -63,36 +74,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
                 return View(obj);
             }
             
-        }
-
-        public IActionResult Edit(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            Product? productFromDB = _unitOfWork.Product.Get(u => u.Id == id);
-            //Category? categoryFromDB1 = _db.Categories.FirstOrDefault(u=>u.Id==id);
-            //Category? categoryFromDB2 = _db.Categories.Where(u => u.Id == id).FirstOrDefault();
-
-            if (productFromDB == null)
-            {
-                return NotFound();
-            }
-            return View(productFromDB);
-        }
-
-        [HttpPost]
-        public IActionResult Edit(Product obj)
-        {
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Product.Update(obj);
-                _unitOfWork.Save();
-                TempData["success"] = "Product updated successfully";
-                return RedirectToAction("Index");
-            }
-            return View();
         }
 
 
